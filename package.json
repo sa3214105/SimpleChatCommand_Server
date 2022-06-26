@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "dependencies": {
+    "async-mutex": "^0.3.2",
+    "nodemodule": "^0.3.0",
+    "sqlite3": "^5.0.6",
+    "ws": "^8.5.0"
+  }
+}

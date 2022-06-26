@@ -1,0 +1,2 @@
+# SimpleChatService--簡易聊天服務
+這是基於websocket的簡易聊天服務，可供建立一般聊天室或是作為WebRTC的信令伺服器使用
