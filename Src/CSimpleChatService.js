@@ -39,7 +39,7 @@ export class SimpleChatService{
         this.m_WebSocketServer.on("error",this.#OnServerError.bind(this));
     }
     async Close(){
-        this.m_WebSocketServer.Close();
+        this.m_WebSocketServer.close();
     }
     GetCommandList(){
         return this.m_CmdMap.keys();
