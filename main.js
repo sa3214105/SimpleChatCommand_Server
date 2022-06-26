@@ -1,4 +1,4 @@
-import { SimpleChatService} from "./Src/CWebSocketController.js";
+import { SimpleChatService} from "./Src/CSimpleChatService.js";
 import { CUserManagerDB } from "./Src/DefaultUserManager.js";
 main2();
 async function main2(){

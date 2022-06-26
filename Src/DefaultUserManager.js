@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex";
 import crypto from "crypto";
 import { CDBManager } from "./CDBManager.js";
-import { IUserManager } from "./CWebSocketController.js";
+import { IUserManager } from "./CSimpleChatService.js";
 export class CUserManager extends IUserManager{
     static s_Instance=null;
     static s_Mutex=new Mutex();
