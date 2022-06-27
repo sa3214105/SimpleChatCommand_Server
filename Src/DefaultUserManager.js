@@ -51,7 +51,7 @@ export class CUserManagerDB extends IUserManager{
     async CreateUser(userName,password){
         await this.#WaitInit();
         let ret=false;
-        if(this.#IsUserNameExist(userName)){
+        if(!(await this.#IsUserNameExist(userName))){
             let salt=Math.random().toString()
             let hashpwd=this.#HashPassword(password,salt);
             await this.#m_DBManager.Run(`INSERT INTO USERINFO ("NAME","PASSWORD","SALT") VALUES  (?,?,?);`,[userName,hashpwd,salt]);
@@ -64,8 +64,8 @@ export class CUserManagerDB extends IUserManager{
         return this.#VerifyPassword(userName,password);
     }
     async #IsUserNameExist(userName){
-        let data=this.#m_DBManager.Get(`SELECT count("NAME") FROM USERINFO WHERE "NAME"=?`,userName);
-        return  data["count('NAME')"] === 1;
+        let data=await this.#m_DBManager.Get(`SELECT count("NAME") FROM USERINFO WHERE "NAME"=?`,userName);
+        return  data["count(\"NAME\")"] === 1;
     }
     #HashPassword(password,salt){
         crypto.randomBytes(16).toString('hex');
