@@ -2,64 +2,6 @@ import { Mutex } from "async-mutex";
 import crypto from "crypto";
 import { CDBManager } from "./CDBManager.js";
 import { IUserManager } from "./CSimpleChatService.js";
-export class CUserManager extends IUserManager{
-    static s_Instance=null;
-    static s_Mutex=new Mutex();
-    #m_Users=new Map();
-    m_Path="./Users.json";
-    m_Salt="test";
-    constructor(){
-        super();
-        if(CUserManager.s_Instance==null){
-            CUserManager.s_Instance=this;
-            this.#GetUsers();
-        }else{
-            throw "Singleton class can not be new"
-        }
-    }
-    static async GetInstance(){
-        await CUserManager.s_Mutex.runExclusive(async ()=>{
-            if(CUserManager.s_Instance===null){
-                CUserManager.s_Instance=new CUserManager();
-            }
-        })
-        return CUserManager.s_Instance;
-    }
-    async CreateUser(userName,password){
-        let ret=false;
-        if(!this.#m_Users.has(userName)){
-            ret=true;
-            this.#m_Users.set(userName,this.#HashPassword(password))
-            this.#Update();
-        }
-        return ret;
-    }
-    async Auth(userName,password){
-        //TODO stringCheck
-        return this.#VerifyPassword(userName,password);
-    }
-    #Update(){
-        let data=JSON.stringify(Object.fromEntries(this.#m_Users));
-        fs.writeFileSync(this.m_Path,data,"utf-8");
-        this.#GetUsers();
-    }
-    #GetUsers(){
-        let dataStr=fs.readFileSync(this.m_Path,"utf-8");
-        let datas=JSON.parse(dataStr);
-        this.#m_Users.clear();
-        for(let [key,value] of Object.entries(datas)){
-            this.#m_Users.set(key,value);
-        }
-    }
-    #HashPassword(password){
-        crypto.randomBytes(16).toString('hex');
-        let ret=crypto.pbkdf2Sync(password,this.m_Salt,1000,64,"sha512").toString();
-        return ret;
-    }
-    #VerifyPassword(userName,password){
-        return this.#HashPassword(password)===this.#m_Users.get(userName);
-    }
-}
 export class CUserManagerDB extends IUserManager{
     static #LAST_VER=0.1;
     #m_Users=new Map();
