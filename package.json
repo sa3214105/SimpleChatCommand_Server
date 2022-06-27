@@ -5,5 +5,11 @@
     "nodemodule": "^0.3.0",
     "sqlite3": "^5.0.6",
     "ws": "^8.5.0"
+  },
+  "devDependencies": {
+    "jest": "^28.1.1"
+  },
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   }
 }
