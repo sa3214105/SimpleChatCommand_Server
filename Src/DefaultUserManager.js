@@ -8,6 +8,7 @@ export class CUserManagerDB extends IUserManager{
     #m_DBVer=0;
     #m_DBManager=null;
     #IsInit=false;
+    #m_Mutex=new Mutex();
     constructor(dbPath){
         super();
         this.#m_DBManager=new CDBManager(dbPath);
@@ -50,6 +51,7 @@ export class CUserManagerDB extends IUserManager{
     }
     async CreateUser(userName,password){
         await this.#WaitInit();
+        const release = await this.#m_Mutex.acquire();
         let ret=false;
         if(!(await this.#IsUserNameExist(userName))){
             let salt=Math.random().toString()
@@ -57,6 +59,7 @@ export class CUserManagerDB extends IUserManager{
             await this.#m_DBManager.Run(`INSERT INTO USERINFO ("NAME","PASSWORD","SALT") VALUES  (?,?,?);`,[userName,hashpwd,salt]);
             ret=true;
         }
+        release();
         return ret;
     }
     async Auth(userName,password){

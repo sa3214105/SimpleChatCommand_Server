@@ -1,20 +1,25 @@
 import sqlite3 from "sqlite3";
 export class CDBManager{
     #m_ConnStr="";
-    #m_DB=null;
     static s_DBStructVer=0.1;
+    #m_DB=null;
     constructor(connectString){
         this.#m_ConnStr=connectString;
-        this.#m_DB=new sqlite3.Database(this.#m_ConnStr);
     }
     async Get(sql,param){
-        return this.#NodeExcuter(this.#m_DB.get,sql,param);;
+        this.#m_DB=new sqlite3.Database(this.#m_ConnStr);
+        let ret =await this.#NodeExcuter(this.#m_DB.get,sql,param);
+        await this.#NodeExcuter(this.#m_DB.close);
+        return ret;
     }
     async Run(sql,param){
-        return this.#NodeExcuter(this.#m_DB.run,sql,param);
+        this.#m_DB=new sqlite3.Database(this.#m_ConnStr);
+        let ret=await this.#NodeExcuter(this.#m_DB.run,sql,param);
+        await this.#NodeExcuter(this.#m_DB.close);
+        return ret;
     }
     async All(sql,param){
-        return new Promise((resolve,reject)=>{
+        let allPromise=new Promise((resolve,reject)=>{
             let rows=[];
             let callBack=(err,row)=>{
                 if(err)return reject(err);
@@ -26,6 +31,10 @@ export class CDBManager{
             }
             this.#m_DB.each(sql,param,callBack,complete);
         });
+        this.#m_DB=new sqlite3.Database(this.#m_ConnStr);
+        let ret =await allPromise;
+        await this.#NodeExcuter(this.#m_DB.close);
+        return ret; 
     }
     async IsTableExist(tableName){
         let sql="SELECT count(*) FROM sqlite_master WHERE type='table' AND name =?"
