@@ -2,7 +2,8 @@ import { Mutex } from "async-mutex";
 import crypto from "crypto";
 import { CDBManager } from "./CDBManager.js";
 import { IUserManager } from "./CSimpleChatService.js";
-export class CUserManagerDB extends IUserManager{
+import * as SCC from "./CSimpleChatCommand.js"
+export class CUserManagerDB extends SCC.IUserManager{
     static #LAST_VER=0.1;
     #m_Users=new Map();
     #m_DBVer=0;
@@ -32,7 +33,7 @@ export class CUserManagerDB extends IUserManager{
         this.#IsInit=true;
     }
     async #WaitInit(){
-        return new Promise((resolve,reject)=>{
+        return await new Promise((resolve,reject)=>{
             let timeCounter=0;
             let timeOut=10000;//10sec;
             let callback=()=>{
