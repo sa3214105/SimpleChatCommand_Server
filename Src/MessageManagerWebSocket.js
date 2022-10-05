@@ -1,79 +1,71 @@
 import { IMessageManager,UserStruct,MessageHandlerResult } from "./CSimpleChatCommand.js";
 import WebSocket,{WebSocketServer} from "ws";
+export class UserStructWebSocket extends UserStruct{
+    #m_WebSocket=null;
+    constructor(webSocket){
+        super("");
+        this.#m_WebSocket=webSocket;
+    }
+    GetWebSocket(){
+        return this.#m_WebSocket;
+    }
+}
 export class MessageManagerWebSocket extends IMessageManager{
     m_WebSocketServer=null;
+    m_WebSocketConfig=null;
     m_Port=8080;
     m_MessageHandler=null;
-    m_UserMap=new Map();
-    m_WebSocketMap=new Map();
-    constructor(port){
+    constructor(obj){
         super();
-        this.m_Port=port;
+        //this.m_UserManager=userManager;
+        if(obj instanceof WebSocket){
+            this.m_WebSocketServer=obj;
+        }else if(obj instanceof Object){
+            this.m_WebSocketConfig=obj;
+        }else{
+            this.m_Port=obj;
+        }
     }
     Start(){
-        this.m_WebSocketServer=new WebSocketServer(
-            {
-                port:this.m_Port
+        if(this.m_WebSocketServer===null){
+            if(this.m_WebSocketConfig===null){
+                this.m_WebSocketServer=new WebSocketServer({port:this.m_Port});
+            }else{
+                this.m_WebSocketServer=new WebSocketServer(this.m_WebSocketConfig);
             }
-        );
+        }
         this.m_WebSocketServer.on("connection",this.#OnConnection.bind(this))
     }
     async #OnConnection(webSocket,request){
-        
+        let user=new UserStructWebSocket(webSocket);
         webSocket.on("message",async(data,isBinary)=>{
-            let user=null;
             let inputObj={};
             try{
                 inputObj=JSON.parse(data);
             }catch{
                 throw "json parse error!";
             }
-            if(this.m_WebSocketMap.has(webSocket)){
-                user=this.m_WebSocketMap.get(webSocket);
-            }
-            let result=null;
-            result=await this.m_MessageHandler(user,inputObj);
-            if(
-                user===null&&
-                result instanceof MessageHandlerResult&&
-                result.Command==="Login"){
-                    user=result.Data;
-                    if(user!==null&&!this.m_UserMap.has(user.ID)){
-                        this.m_UserMap.set(user.ID,webSocket);
-                        this.m_WebSocketMap.set(webSocket,user.ID);
-                    }else{//TODO 需再優化
-                        result.State="failed";
-                        result.Data=undefined;
-                    }
-            }//Login
+            let result=await this.m_MessageHandler(user,inputObj);
             webSocket.send(JSON.stringify(result));
-        });
-        webSocket.on("close",(code,reason)=>{
-            let userID=this.m_WebSocketMap.get(webSocket);
-            this.m_UserMap.delete(userID);
-            this.m_WebSocketMap.delete(webSocket);
+        })
+        webSocket.on("close",async(code,reason)=>{
+            let result=await this.m_MessageHandler(user,{Command:"Logout",data:""});
+            webSocket.send(JSON.stringify(result));
         });
     }
     SetMessageHandler(messageHandler){
         this.m_MessageHandler=messageHandler;
     }
     SendMessage(sender,receiver,message){
+        if(!sender instanceof UserStructWebSocket||!receiver instanceof UserStructWebSocket){
+            throw "Internal Error 100";//wrong user type
+        }
         let data={
-            Sender:sender,
-            Receiver:receiver,
+            Sender:sender.ID,
+            Receiver:receiver.ID,
             Message:message
         };
-        if(this.m_UserMap.has(receiver)){
-            let receiverWebSocket=this.m_UserMap.get(receiver);
-            receiverWebSocket.send(JSON.stringify(data));
-        }else{
-            throw "receiver does not exist"
-        }
-    }
-    GetUsers(){
-        return this.m_UserMap.keys();
-    }
-    GetUsersByGroup(){
-        return this.GetUsers();
+        receiver.GetWebSocket().send(JSON.stringify(data));
+        return "success";
     }
 }

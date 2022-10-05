@@ -23,13 +23,6 @@ class MessageManagerForTest extends SCC.IMessageManager{
         console.log(this.#m_LastMessage);
         return true;
     }
-    GetUsers(){
-        return [
-            new SCC.UserStruct("001","user1"),
-            new SCC.UserStruct("002","user2"),
-            new SCC.UserStruct("012","user12"),
-        ]
-    }
 }
 class UserManagerForTest extends SCC.IUserManager{
     m_Users=[
@@ -53,13 +46,35 @@ test("SendMessage",async()=>{
     let messageManager=new MessageManagerForTest();
     let userManager=new UserManagerForTest();
     let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
-    let sender=new SCC.UserStruct("001","user1");
-    let receiver=new SCC.UserStruct("002","User2");
+    let sender=new SCC.UserStruct("");
+    let receiver=new SCC.UserStruct("");
     let message="test";
+    let loginObj={
+        Command:"Login",
+        Data:{
+            UserID:"user1",
+            Password:""
+        }
+    }
+    let loginObj2={
+        Command:"Login",
+        Data:{
+            UserID:"user2",
+            Password:""
+        }
+    }
+    await messageManager.SendCommand(
+        sender,
+        loginObj
+    );
+    await messageManager.SendCommand(
+        receiver,
+        loginObj2
+    );
     let commandObj={
         Command:"SendMessage",
         Data:{
-            Receiver:receiver,
+            Receiver:receiver.ID,
             Message:message
         }
     }

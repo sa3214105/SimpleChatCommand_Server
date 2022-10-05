@@ -1,3 +1,4 @@
+import { Mutex } from "async-mutex";
 export class IUserManager{
     async CreateUser(userName,password){
         throw "no implementation";
@@ -13,19 +14,16 @@ export class IMessageManager{
     SendMessage(sender,receiver,message){
         throw "no implementation";
     }
-    GetUsers(){
-        throw "no implementation";
-    }
-    GetUsersByGroup(){
-        return this.GetUsers();
-    }
 }
 export class UserStruct{
     ID="";
-    Name="";
-    constructor(id,name){
-        this.ID=id;
-        this.Name=name;
+    constructor(id){
+        if(!!id){
+            this.ID=id;
+        }
+    }
+    IsLoggedIn(){
+        return this.ID!=="";
     }
 }
 export class CommandStruct{
@@ -58,6 +56,7 @@ export class SimpleChatCommand{
     #m_UserValidator=null;
     #m_MessageManager=null;
     #m_CmdMap=new Map();
+    #m_UserManager=new UserManager();
     constructor(userValidator,messageManager){
         this.#CheckConstructParameter(userValidator,messageManager);
         this.#SetDefaultCommands();
@@ -79,7 +78,8 @@ export class SimpleChatCommand{
             this.#m_CmdMap=new Map([
                 ["Login",this.#Login.bind(this)],
                 ["SendMessage",this.#SendMessage.bind(this)],
-                ["Broadcast",this.#Broadcast.bind(this)]
+                ["Broadcast",this.#Broadcast.bind(this)],
+                ["Logout",this.#Logout.bind(this)]
             ]);
         }
     AddCustomerCommand(commandName,commandFunc){
@@ -101,7 +101,7 @@ export class SimpleChatCommand{
             this.#CheckCommandObj(commandObj);
             let {Command:command,Data:data}=commandObj;
             result.Command=command;
-            if(sender!==null||command==="Login"){
+            if(sender.IsLoggedIn()||command==="Login"){//TODO islogin
                 result.Data=await this.#m_CmdMap.get(command)(sender,data);
                 result.State="success";
             }else{
@@ -110,7 +110,7 @@ export class SimpleChatCommand{
             }
         }catch(e){
             console.warn(e)
-            result.Data=e   ;
+            result.Data=e;
             result.State="failed";
         }
         return result;
@@ -130,26 +130,34 @@ export class SimpleChatCommand{
         }
     //Command handler
     async #Login(sender,data){
-        let user=null;
-        if(sender!==null){
+        if(sender.IsLoggedIn()){
             throw "The User Is Login";
         }else{
             let userInfo=data;
             if(!userInfo instanceof LoginStruct){
-                throw "Wrong Login Details"
+                throw "Wrong Login Details";
             }else{
                 let IsPasswordRight=await this.#m_UserValidator.Auth(userInfo.UserID,userInfo.Password);
                 if(IsPasswordRight){
-                    user=new UserStruct(userInfo.UserID,userInfo.UserID);
+                    if(this.#m_UserManager.GetUserByID(userInfo.UserID)===null){
+                        sender.ID=userInfo.UserID;
+                        await this.#m_UserManager.AddUser_Async(sender);
+                    }else{
+                        throw "This user is already logged in";
+                    }
                 }
             }
         }
-        return user;
+        return sender;
     }
     async #SendMessage(sender,data){
         let messageObj=data;
         this.#CheckMessageObj(messageObj);
-        let {Receiver:receiver,Message:message}=messageObj;
+        let {Receiver:receiverID,Message:message}=messageObj;
+        let receiver=this.#m_UserManager.GetUserByID(receiverID);
+        if(receiver===null){
+            throw "The receiver does not exist";
+        }
         return this.#m_MessageManager.SendMessage(sender,receiver,message);
     }
         #CheckMessageObj(messageObj){
@@ -159,15 +167,62 @@ export class SimpleChatCommand{
         }
     async #Broadcast(sender,data){
         let broadcastObj=data;
+        let ret=[];
         this.#CheckBroadcastObj(broadcastObj);
         let {Receivers:receivers,Broadcast:broadcast}=broadcastObj;
-        return receivers.map(
-            receiver=>this.#m_MessageManager.SendMessage(sender,receiver,broadcast)
-        );
+        for(let receiver of receivers){
+            let result;
+            try{
+                result=await this.#SendMessage(sender,{Receiver:receiver,Message:broadcast})
+            }catch(e){
+                result=e;
+            }
+            ret.push(result);
+        }
+        return ret
     }
         #CheckBroadcastObj(broadcastObj){
             if(!broadcastObj instanceof BroadcastStruct){
                 throw "The obj is not a instance of BroadcastStruct";
             }
         }
+    async #Logout(sender){
+        return await this.#m_UserManager.RemoveUser_Async(sender)?"success":"failed";
+    }
+}
+export class UserManager{
+    #m_Mutex=new Mutex();
+    #m_Users=new Map();
+    async AddUser_Async(user){
+        let ret=false;
+        const release = await this.#m_Mutex.acquire();
+        if(user instanceof UserStruct){
+            if(!this.#m_Users.has(user.ID)){
+                this.#m_Users.set(user.ID,user);
+                ret=true;
+            }
+        }
+        release();
+        return ret;
+    }
+    async RemoveUser_Async(user){
+        let ret=false;
+        const release = await this.#m_Mutex.acquire();
+        if(this.#m_Users.has(user.ID)){
+            ret=this.#m_Users.delete(user.ID);
+            ret=true;
+        }
+        release();
+        return ret;
+    }
+    GetUserByID(userID){
+        let ret=null;
+        if(this.#m_Users.has(userID)){
+            ret=this.#m_Users.get(userID);
+        }
+        return ret;
+    }
+    GetUsers(){
+        return this.#m_Users.keys();
+    }
 }

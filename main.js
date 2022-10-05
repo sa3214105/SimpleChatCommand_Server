@@ -16,7 +16,7 @@ async function websocketTest(){
     for(let i=1;i<=10;++i){
         userManager.CreateUser("test"+i,"p@ssw0rd");
     }
-    let messageManager=new my_ws.MessageManagerWebSocket("8080");
+    let messageManager=new my_ws.MessageManagerWebSocket(8080);
     let scc=new SCC.SimpleChatCommand(userManager,messageManager);
     messageManager.Start();
 }
