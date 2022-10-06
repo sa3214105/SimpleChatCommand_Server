@@ -101,7 +101,7 @@ export class SimpleChatCommand{
             this.#CheckCommandObj(commandObj);
             let {Command:command,Data:data}=commandObj;
             result.Command=command;
-            if(sender.IsLoggedIn()||command==="Login"){//TODO islogin
+            if(sender.IsLoggedIn()||command==="Login"){//TODO isLoggedIn
                 result.Data=await this.#m_CmdMap.get(command)(sender,data);
                 result.State="success";
             }else{
@@ -145,10 +145,12 @@ export class SimpleChatCommand{
                     }else{
                         throw "This user is already logged in";
                     }
+                }else{
+                    throw "Wrong UserID or Password";
                 }
             }
         }
-        return sender;
+        return {User:sender.ID};
     }
     async #SendMessage(sender,data){
         let messageObj=data;
@@ -187,7 +189,7 @@ export class SimpleChatCommand{
             }
         }
     async #Logout(sender){
-        return await this.#m_UserManager.RemoveUser_Async(sender)?"success":"failed";
+        await this.#m_UserManager.RemoveUser_Async(sender);
     }
 }
 export class UserManager{
@@ -210,6 +212,7 @@ export class UserManager{
         const release = await this.#m_Mutex.acquire();
         if(this.#m_Users.has(user.ID)){
             ret=this.#m_Users.delete(user.ID);
+            user.ID="";
             ret=true;
         }
         release();

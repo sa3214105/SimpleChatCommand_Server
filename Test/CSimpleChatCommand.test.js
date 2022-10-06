@@ -3,8 +3,12 @@ class MessageManagerForTest extends SCC.IMessageManager{
     #m_EventListener=null;
     #m_LastMessage="";
     #m_LastHandlerResult="";
-    async SendCommand(sender,CommandObj){
+    async SendCommand_Async(CommandObj,sender){
+        if(!sender){
+            sender=new SCC.UserStruct("");
+        }
         this.#m_LastHandlerResult=await this.#m_EventListener(sender,CommandObj);
+        return sender;
     }
     GetLastMessage(){
         return this.#m_LastMessage;
@@ -26,15 +30,15 @@ class MessageManagerForTest extends SCC.IMessageManager{
 }
 class UserManagerForTest extends SCC.IUserManager{
     m_Users=[
-        "user1",
-        "user2",
-        "user12"
+        ["user1","p@ssw0rd"],
+        ["user2","p@ssw0rd"],
+        ["user3","p@ssw0rd"],
     ]
     async CreateUser(userName,password){
         this.m_Users.push(userName);
     }
     async Auth(userName,password){
-       return this.m_Users.find(user=>user===userName);
+       return this.m_Users.find(user=>user[0]===userName&&user[1]===password);
     }
 }
 test("CreateObject",()=>{
@@ -42,34 +46,139 @@ test("CreateObject",()=>{
     let userManager=new UserManagerForTest();
     let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
 })
-test("SendMessage",async()=>{
+test("Login_HappyPath",async()=>{
     let messageManager=new MessageManagerForTest();
     let userManager=new UserManagerForTest();
     let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
-    let sender=new SCC.UserStruct("");
-    let receiver=new SCC.UserStruct("");
-    let message="test";
     let loginObj={
         Command:"Login",
         Data:{
             UserID:"user1",
-            Password:""
+            Password:"p@ssw0rd"
         }
     }
-    let loginObj2={
+    let user=await messageManager.SendCommand_Async(loginObj);
+    expect(user.IsLoggedIn()).toBe(true);
+    expect(user.ID).toBe(loginObj.Data.UserID);
+    expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
+        loginObj.Command,
+        "success",
+        {User:loginObj.Data.UserID}
+    ));
+})
+//Wrong password
+test("Login_UnhappyPath_0",async()=>{
+    let messageManager=new MessageManagerForTest();
+    let userManager=new UserManagerForTest();
+    let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
+    let loginObj={
+        Command:"Login",
+        Data:{
+            UserID:"user1",
+            Password:"wrong_p@ssw0rd"
+        }
+    }
+    let user=await messageManager.SendCommand_Async(loginObj);
+    expect(user.IsLoggedIn()).toBe(false);
+    expect(user.ID).toBe("");
+    expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
+        loginObj.Command,
+        "failed",
+        "Wrong UserID or Password"
+    ));
+})
+//Repeat login
+test("Login_UnhappyPath_1",async()=>{
+    let messageManager=new MessageManagerForTest();
+    let userManager=new UserManagerForTest();
+    let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
+    let loginObj={
+        Command:"Login",
+        Data:{
+            UserID:"user1",
+            Password:"p@ssw0rd"
+        }
+    }
+    let user1=await messageManager.SendCommand_Async(loginObj);
+    expect(user1.IsLoggedIn()).toBe(true);
+    expect(user1.ID).toBe(loginObj.Data.UserID);
+    expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
+        loginObj.Command,
+        "success",
+        {User:loginObj.Data.UserID}
+    ));
+    let user2=await messageManager.SendCommand_Async(loginObj);
+    expect(user2.IsLoggedIn()).toBe(false);
+    expect(user2.ID).toBe("");
+    expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
+        loginObj.Command,
+        "failed",
+        "This user is already logged in"
+    ))
+})
+test("Logout",async()=>{
+    let messageManager=new MessageManagerForTest();
+    let userManager=new UserManagerForTest();
+    let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
+    let loginObj={
+        Command:"Login",
+        Data:{
+            UserID:"user1",
+            Password:"p@ssw0rd"
+        }
+    }
+    let logoutObj={
+        Command:"Logout",
+        Data:""
+    }
+    let user1=await messageManager.SendCommand_Async(loginObj);
+    expect(user1.IsLoggedIn()).toBe(true);
+    expect(user1.ID).toBe(loginObj.Data.UserID);
+    expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
+        loginObj.Command,
+        "success",
+        {User:loginObj.Data.UserID}
+    ));
+    await messageManager.SendCommand_Async(logoutObj,user1);
+    expect(user1.IsLoggedIn()).toBe(false);
+    expect(user1.ID).toBe("");
+    expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
+        logoutObj.Command,
+        "success"
+    ))
+    let user2=await messageManager.SendCommand_Async(loginObj);
+    expect(user2.IsLoggedIn()).toBe(true);
+    expect(user2.ID).toBe(loginObj.Data.UserID);
+    expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
+        loginObj.Command,
+        "success",
+        {User:loginObj.Data.UserID}
+    ))
+})
+test("SendMessage1",async()=>{
+    let messageManager=new MessageManagerForTest();
+    let userManager=new UserManagerForTest();
+    let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
+    let message="test";
+    let senderLoginObj={
+        Command:"Login",
+        Data:{
+            UserID:"user1",
+            Password:"p@ssw0rd"
+        }
+    }
+    let receiverLoginObj={
         Command:"Login",
         Data:{
             UserID:"user2",
-            Password:""
+            Password:"p@ssw0rd"
         }
     }
-    await messageManager.SendCommand(
-        sender,
-        loginObj
+    let sender=await messageManager.SendCommand_Async(
+        senderLoginObj
     );
-    await messageManager.SendCommand(
-        receiver,
-        loginObj2
+    let receiver=await messageManager.SendCommand_Async(
+        receiverLoginObj
     );
     let commandObj={
         Command:"SendMessage",
@@ -81,9 +190,8 @@ test("SendMessage",async()=>{
     let resultMessage=
             `${JSON.stringify(sender)} -> ${JSON.stringify(receiver)}
             {${message}}`;
-    await messageManager.SendCommand(
-        sender,
-        commandObj
+    await messageManager.SendCommand_Async(
+        commandObj,sender
     );
     expect(messageManager.GetLastMessage()).toBe(resultMessage);
     expect(messageManager.GetLastHandlerResult()).toEqual({
