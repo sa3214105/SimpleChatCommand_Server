@@ -1,7 +1,6 @@
 import { Mutex } from "async-mutex";
 import crypto from "crypto";
 import { CDBManager } from "./CDBManager.js";
-import { IUserManager } from "./CSimpleChatService.js";
 import * as SCC from "./CSimpleChatCommand.js"
 export class CUserManagerDB extends SCC.IUserManager{
     static #LAST_VER=0.1;
