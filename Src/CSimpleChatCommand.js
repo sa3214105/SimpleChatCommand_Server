@@ -1,4 +1,5 @@
 import { Mutex } from "async-mutex";
+import * as UTILITY from "./Utility.js";
 export class IUserManager{
     async CreateUser(userName,password){
         throw "no implementation";
@@ -86,10 +87,10 @@ export class SimpleChatCommand{
         this.#m_CmdMap.set(commandName,commandFunc);
     }
         #CheckCustomerCommandParameter(commandName,commandFunc){
-            if(!commandName instanceof String){
+            if(!(commandName instanceof String)){
                 throw "commandName must be a String";
             }
-            if(!commandFunc instanceof Function){
+            if(!(commandFunc instanceof Function)){
                 throw "commandFunc must be a Function";
             }
         }
@@ -100,7 +101,7 @@ export class SimpleChatCommand{
             this.#CheckCommandObj(commandObj);
             let {Command:command,Data:data}=commandObj;
             result.Command=command;
-            if(sender.IsLoggedIn()||command==="Login"){//TODO isLoggedIn
+            if(sender.IsLoggedIn()||command==="Login"){
                 result.Data=await this.#m_CmdMap.get(command)(sender,data);
                 result.State="success";
             }else{
@@ -115,12 +116,12 @@ export class SimpleChatCommand{
         return result;
     }
         #CheckSenderObj(senderObj){
-            if(!senderObj instanceof UserStruct){
+            if(!(senderObj instanceof UserStruct)){
                 throw "The Sender is not a instance of UserStruct";
             }
         }
         #CheckCommandObj(commandObj){
-            if(!commandObj instanceof CommandStruct){
+            if(!UTILITY.InstanceOf_Soft(CommandStruct,commandObj)){//TODO 001
                 throw "The obj is not a instance of CommandStruct";
             }
             if(!this.#m_CmdMap.has(commandObj["Command"])){
@@ -133,8 +134,8 @@ export class SimpleChatCommand{
             throw "The User Is Login";
         }else{
             let userInfo=data;
-            if(!userInfo instanceof LoginStruct){
-                throw "Wrong Login Details";
+            if(!UTILITY.InstanceOf_Soft(LoginStruct,userInfo)){//TODO 001
+                throw "Wrong Login Struct";
             }else{
                 let IsPasswordRight=await this.#m_UserValidator.Auth(userInfo.UserID,userInfo.Password);
                 if(IsPasswordRight){
@@ -162,7 +163,7 @@ export class SimpleChatCommand{
         return this.#m_MessageManager.SendMessage(sender,receiver,message);
     }
         #CheckMessageObj(messageObj){
-            if(!messageObj instanceof MessageStruct){
+            if(!UTILITY.InstanceOf_Soft(MessageStruct,messageObj)){//TODO 001
                 throw "The messageObj is not a instance of MessageStruct";
             }
         }
@@ -185,7 +186,7 @@ export class SimpleChatCommand{
         return ret
     }
         #CheckBroadcastObj(broadcastObj){
-            if(!broadcastObj instanceof BroadcastStruct){
+            if(!UTILITY.InstanceOf_Soft(BroadcastStruct,broadcastObj)){//TODO 001
                 throw "The obj is not a instance of BroadcastStruct";
             }
         }
