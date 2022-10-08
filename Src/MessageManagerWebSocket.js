@@ -42,11 +42,12 @@ export class MessageManagerWebSocket extends IMessageManager{
             let inputObj={};
             try{
                 inputObj=JSON.parse(data);
+                let result=await this.m_MessageHandler(user,inputObj);
+                webSocket.send(JSON.stringify(result));
             }catch{
-                throw "json parse error!";
+                webSocket.send("json parse error!");
             }
-            let result=await this.m_MessageHandler(user,inputObj);
-            webSocket.send(JSON.stringify(result));
+            
         })
         webSocket.on("close",async(code,reason)=>{
             let result=await this.m_MessageHandler(user,{Command:"Logout",data:""});
