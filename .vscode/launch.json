@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Show Test Details",
+            "request": "launch",
+            "type": "chrome",
+            "url": "${workspaceFolder}/coverage/lcov-report/index.html"
+        },
+        {
             "type": "node",
             "name": "vscode-jest-tests.v2",
             "request": "launch",
@@ -37,11 +43,12 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Run main.js",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\main.js"
         }
+        
     ]
 }
