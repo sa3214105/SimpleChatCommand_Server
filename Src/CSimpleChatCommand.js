@@ -39,7 +39,6 @@ export class MessageStruct{
     Message="";
 }
 export class BroadcastStruct{
-    Receivers=[];//list of UserStruct
     Broadcast="";
 }
 export class MessageHandlerResult{
@@ -171,11 +170,13 @@ export class SimpleChatCommand{
         let broadcastObj=data;
         let ret=[];
         this.#CheckBroadcastObj(broadcastObj);
-        let {Receivers:receivers,Broadcast:broadcast}=broadcastObj;
-        for(let receiver of receivers){
+        let {Broadcast:broadcast}=broadcastObj;
+        for(let receiver of this.#m_UserManager.GetUsers()){
             let result;
             try{
-                result=await this.#SendMessage(sender,{Receiver:receiver,Message:broadcast})
+                if(sender!=receiver){
+                    result=await this.#SendMessage(sender,{Receiver:receiver,Message:broadcast})
+                }
             }catch(e){
                 result=e;
             }
