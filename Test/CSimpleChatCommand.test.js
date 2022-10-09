@@ -105,7 +105,7 @@ test("Login_UnhappyPath_0",async()=>{
         "Wrong UserID or Password"
     ));
 })
-//Repeat login
+//Login to an account already signed in
 test("Login_UnhappyPath_1",async()=>{
     let messageManager=new MessageManagerForTest();
     let userManager=new UserManagerForTest();
@@ -131,8 +131,33 @@ test("Login_UnhappyPath_1",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
         loginObj.Command,
         "failed",
-        "This user is already logged in"
+        "This account is already logged in"
     ))
+})
+//Repeat login
+test("Login_UnhappyPath_2",async()=>{
+    let {MessageManager:messageManager}=init();
+    let loginObj=GetLoginObj("user1");
+    let sender=await messageManager.SendCommand_Async(loginObj);
+    await messageManager.SendCommand_Async(loginObj,sender);
+    expect(messageManager.GetLastHandlerResult()).toEqual({
+        Command:"Login",
+        State:"failed",
+        Data:"The User Is Login"
+    });
+})
+//Wrong login struct
+test("Login_UnHappyPath_3",async()=>{
+    let {MessageManager:messageManager}=init();
+    await messageManager.SendCommand_Async({
+        Command:"Login",
+        Data:{}
+    })
+    expect(messageManager.GetLastHandlerResult()).toEqual({
+        Command:"Login",
+        State:"failed",
+        Data:"Wrong Login Struct"
+    })
 })
 test("Logout_HappyPath",async()=>{
     let messageManager=new MessageManagerForTest();
@@ -173,7 +198,8 @@ test("Logout_HappyPath",async()=>{
         {User:loginObj.Data.UserID}
     ))
 })
-test("LogOut_UnhappyPath",async()=>{//logout before login
+//logout before login
+test("LogOut_UnhappyPath",async()=>{
     let {MessageManager:messageManager}=init();
     await messageManager.SendCommand_Async({
         Command:"Logout",
@@ -205,7 +231,8 @@ test("SendMessage_HappyPath",async()=>{
     expect(messageManager.GetLastMessage()).toEqual({sender,receiver,message});
     expect(messageManager.IsAllResultSuccess()).toBe(true);
 })
-test("SendMessage_UnhappyPath",async()=>{//the receiver does not exist
+//the receiver does not exist
+test("SendMessage_UnhappyPath",async()=>{
     let {MessageManager:messageManager}=init();
     let senderID="user1";
     let receiverID="user2";
@@ -223,7 +250,7 @@ test("SendMessage_UnhappyPath",async()=>{//the receiver does not exist
         Data:"The receiver does not exist"
     });
 })
-test("BroadCast_HappyPath",async()=>{
+test("Broadcast_HappyPath",async()=>{
     let {MessageManager:messageManager}=init();
     let senderID="user1";
     let receiverIDs=["user2","user3"];
@@ -245,4 +272,52 @@ test("BroadCast_HappyPath",async()=>{
         expect(cmpResult).toBe(true);
     }
     expect(messageManager.IsAllResultSuccess()).toBe(true);
+})
+//Wrong Broadcast Struct
+test("Broadcast_UnHappyPath",async()=>{
+    let {MessageManager:messageManager}=init();
+    let sender=await messageManager.SendCommand_Async(GetLoginObj("user1"));
+    await messageManager.SendCommand_Async({
+        Command:"Broadcast",
+        Data:{}
+    },sender);
+    expect(messageManager.GetLastHandlerResult()).toEqual({
+        Command:"Broadcast",
+        State:"failed",
+        Data:"The obj is not a instance of BroadcastStruct"
+    })
+})
+test("WrongCommandStruct",async()=>{
+    let {MessageManager:messageManager}=init();
+    await messageManager.SendCommand_Async({});
+    expect(messageManager.GetLastHandlerResult()).toEqual({
+        Command:"",
+        State:"failed",
+        Data:"The obj is not a instance of CommandStruct"
+    })
+    await messageManager.SendCommand_Async({
+        Command:"Test",
+        Data:""
+    });
+    expect(messageManager.GetLastHandlerResult()).toEqual({
+        Command:"",
+        State:"failed",
+        Data:"Wrong Command"
+    })
+})
+test("AddCustomerCommand",async()=>{
+    let {MessageManager:messageManager,SccObj:sccObj}=init();
+    sccObj.AddCustomerCommand("Customer1",async(sender,data)=>{
+        return {sender,data};
+    })
+    let sender=await messageManager.SendCommand_Async(GetLoginObj("user1"));
+    await messageManager.SendCommand_Async({
+        Command:"Customer1",
+        Data:"test"
+    },sender);
+    expect(messageManager.GetLastHandlerResult()).toEqual({
+        Command:"Customer1",
+        State:"success",
+        Data:{data:"test",sender}
+    })
 })

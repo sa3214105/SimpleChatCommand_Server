@@ -87,11 +87,11 @@ export class SimpleChatCommand{
         this.#m_CmdMap.set(commandName,commandFunc);
     }
         #CheckCustomerCommandParameter(commandName,commandFunc){
-            if(!(commandName instanceof String)){
-                throw "commandName must be a String";
+            if(typeof(commandName)!=="string"){
+                throw "CommandName must be a String";
             }
-            if(!(commandFunc instanceof Function)){
-                throw "commandFunc must be a Function";
+            if(typeof(commandFunc)!=="function"){
+                throw "CommandFunc must be a Function";
             }
         }
     async MessageHandler(sender,commandObj){
@@ -121,7 +121,7 @@ export class SimpleChatCommand{
             }
         }
         #CheckCommandObj(commandObj){
-            if(!UTILITY.InstanceOf_Soft(CommandStruct,commandObj)){//TODO 001
+            if(!UTILITY.InstanceOf_Soft(CommandStruct,commandObj)){
                 throw "The obj is not a instance of CommandStruct";
             }
             if(!this.#m_CmdMap.has(commandObj["Command"])){
@@ -134,7 +134,7 @@ export class SimpleChatCommand{
             throw "The User Is Login";
         }else{
             let userInfo=data;
-            if(!UTILITY.InstanceOf_Soft(LoginStruct,userInfo)){//TODO 001
+            if(!UTILITY.InstanceOf_Soft(LoginStruct,userInfo)){
                 throw "Wrong Login Struct";
             }else{
                 let IsPasswordRight=await this.#m_UserValidator.Auth(userInfo.UserID,userInfo.Password);
@@ -143,7 +143,7 @@ export class SimpleChatCommand{
                         sender.ID=userInfo.UserID;
                         await this.#m_UserManager.AddUser_Async(sender);
                     }else{
-                        throw "This user is already logged in";
+                        throw "This account is already logged in";
                     }
                 }else{
                     throw "Wrong UserID or Password";
@@ -163,7 +163,7 @@ export class SimpleChatCommand{
         return this.#m_MessageManager.SendMessage(sender,receiver,message);
     }
         #CheckMessageObj(messageObj){
-            if(!UTILITY.InstanceOf_Soft(MessageStruct,messageObj)){//TODO 001
+            if(!UTILITY.InstanceOf_Soft(MessageStruct,messageObj)){
                 throw "The messageObj is not a instance of MessageStruct";
             }
         }
@@ -186,7 +186,7 @@ export class SimpleChatCommand{
         return ret
     }
         #CheckBroadcastObj(broadcastObj){
-            if(!UTILITY.InstanceOf_Soft(BroadcastStruct,broadcastObj)){//TODO 001
+            if(!UTILITY.InstanceOf_Soft(BroadcastStruct,broadcastObj)){
                 throw "The obj is not a instance of BroadcastStruct";
             }
         }
