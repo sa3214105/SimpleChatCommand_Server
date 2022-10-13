@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex";
 import crypto from "crypto";
 import { CDBManager } from "./CDBManager.js";
-import * as SCC from "./CSimpleChatCommand.js"
+import * as SCC from "./SimpleChatCommand_Server.js"
 export class UserValidator_SQLite extends SCC.IUserManager{
     static #LAST_VER=0.1;
     #m_Users=new Map();

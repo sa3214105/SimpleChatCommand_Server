@@ -1,4 +1,4 @@
-import { IMessageManager,UserStruct,MessageHandlerResult } from "./CSimpleChatCommand.js";
+import { IMessageManager,UserStruct,MessageHandlerResult } from "./SimpleChatCommand_Server.js";
 import WebSocket,{WebSocketServer} from "ws";
 export class UserStructWebSocket extends UserStruct{
     #m_WebSocket=null;

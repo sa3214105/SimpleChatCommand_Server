@@ -1,6 +1,6 @@
 import { SimpleChatService} from "./Src/CSimpleChatService.js";
 import * as UM from "./Src/UserValidator.js";
-import * as SCC from "./Src/CSimpleChatCommand.js";
+import * as SCC from "./Src/SimpleChatCommand_Server.js";
 import * as my_ws from "./Src/MessageManagerWebSocket.js";
 import {UserValidator_SQLite} from "./Src/UserValidator.js";
 //main2();
@@ -17,6 +17,6 @@ async function websocketTest(){
         userManager.CreateUser("test"+i,"p@ssw0rd");
     }
     let messageManager=new my_ws.MessageManagerWebSocket(8080);
-    let scc=new SCC.SimpleChatCommand(userManager,messageManager);
+    let scc=new SCC.SimpleChatCommand_Server(userManager,messageManager);
     messageManager.Start();
 }

@@ -52,7 +52,7 @@ export class MessageHandlerResult{
         this.Data=data;
     }
 }
-export class SimpleChatCommand{
+export class SimpleChatCommand_Server{
     #m_UserValidator=null;
     #m_MessageManager=null;
     #m_CmdMap=new Map();
