@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { resolve } from "path";
-import { CUserManagerDB } from "../Src/DefaultUserManager.js";
+import {UserValidator_SQLite } from "../Src/UserValidator.js";
 function RemoveDB(dbPath){
     if(fs.existsSync(dbPath)){
         fs.unlinkSync(dbPath);
@@ -12,7 +12,7 @@ test("Basic Test",async()=>{
     let passwd="passwd";
     //remove old db
     RemoveDB(dbPath);
-    let userManager=new CUserManagerDB(dbPath);
+    let userManager=new UserValidator_SQLite(dbPath);
     expect(await userManager.CreateUser(userName,passwd)).toBe(true);
     expect(await userManager.Auth(userName,passwd)).toBe(true);
     userManager=null;
@@ -24,7 +24,7 @@ test("Duplicate User Creation",async()=>{
     let passwd="passwd";
     //remove old db
     RemoveDB(dbPath);
-    let userManager=new CUserManagerDB(dbPath);
+    let userManager=new UserValidator_SQLite(dbPath);
     expect(await userManager.CreateUser(userName,passwd)).toBe(true);
     expect(await userManager.CreateUser(userName,passwd)).toBe(false);
     expect(await userManager.Auth(userName,passwd)).toBe(true);
@@ -34,7 +34,7 @@ test("Duplicate User Creation",async()=>{
 test("CreateUser Thread Safe Test",async()=>{
     let dbPath="./test4.db";
     RemoveDB(dbPath);
-    let userManager=new CUserManagerDB(dbPath);
+    let userManager=new UserValidator_SQLite(dbPath);
     let awaitfunc=new Promise((resolve,reject)=>{
         let counter=0;
         for(let i=0;i<1000;++i){

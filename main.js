@@ -1,12 +1,12 @@
 import { SimpleChatService} from "./Src/CSimpleChatService.js";
-import * as UM from "./Src/DefaultUserManager.js";
+import * as UM from "./Src/UserValidator.js";
 import * as SCC from "./Src/CSimpleChatCommand.js";
 import * as my_ws from "./Src/MessageManagerWebSocket.js";
-import { CUserManagerDB } from "./Src/DefaultUserManager.js";
+import {UserValidator_SQLite} from "./Src/UserValidator.js";
 //main2();
 websocketTest();
 async function main2(){
-    let userManager=new CUserManagerDB("./test2.db");
+    let userManager=new UserValidator_SQLite("./test2.db");
     let server = new SimpleChatService(userManager);
     server.Start();
     console.log(server.GetCommandList());

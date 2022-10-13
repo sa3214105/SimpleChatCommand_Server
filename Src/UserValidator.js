@@ -2,7 +2,7 @@ import { Mutex } from "async-mutex";
 import crypto from "crypto";
 import { CDBManager } from "./CDBManager.js";
 import * as SCC from "./CSimpleChatCommand.js"
-export class CUserManagerDB extends SCC.IUserManager{
+export class UserValidator_SQLite extends SCC.IUserManager{
     static #LAST_VER=0.1;
     #m_Users=new Map();
     #m_DBVer=0;
@@ -23,7 +23,7 @@ export class CUserManagerDB extends SCC.IUserManager{
             let createSql="CREATE TABLE 'DB_INFO'('VERSION' REAL)";
             let insertSql="INSERT INTO 'DB_INFO' VALUES (?)";
             await this.#m_DBManager.Run(createSql);
-            await this.#m_DBManager.Run(insertSql,CUserManagerDB.#LAST_VER);
+            await this.#m_DBManager.Run(insertSql,UserValidator_SQLite.#LAST_VER);
         }
         let tableSql="CREATE TABLE IF NOT EXISTS 'USERINFO'('NAME' TEXT NOT NULL PRIMARY KEY,'PASSWORD' TEXT NOT NULL,'SALT' TEXT NOT NULL);";
         let indexSql="CREATE INDEX IF NOT EXISTS 'USERINFO_INDEX' ON 'USERINFO'('NAME')";

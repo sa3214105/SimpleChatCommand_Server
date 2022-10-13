@@ -28,7 +28,7 @@ class MessageManagerForTest extends SCC.IMessageManager{
         return true;
     }
 }
-class UserManagerForTest extends SCC.IUserManager{
+class UserValidatorForTest extends SCC.IUserManager{
     m_Users=[
         ["user1","p@ssw0rd"],
         ["user2","p@ssw0rd"],
@@ -43,7 +43,7 @@ class UserManagerForTest extends SCC.IUserManager{
 }
 function init(){
     let MessageManager=new MessageManagerForTest();
-    let UserManager=new UserManagerForTest();
+    let UserManager=new UserValidatorForTest();
     let SccObj=new SCC.SimpleChatCommand(UserManager,MessageManager)
     return {
         MessageManager,
@@ -61,12 +61,12 @@ function GetLoginObj(userID,password){
 }
 test("CreateObject",()=>{
     let messageManager=new MessageManagerForTest();
-    let userManager=new UserManagerForTest();
+    let userManager=new UserValidatorForTest();
     let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
 })
 test("Login_HappyPath",async()=>{
     let messageManager=new MessageManagerForTest();
-    let userManager=new UserManagerForTest();
+    let userManager=new UserValidatorForTest();
     let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
     let loginObj={
         Command:"Login",
@@ -87,7 +87,7 @@ test("Login_HappyPath",async()=>{
 //Wrong password
 test("Login_UnhappyPath_0",async()=>{
     let messageManager=new MessageManagerForTest();
-    let userManager=new UserManagerForTest();
+    let userManager=new UserValidatorForTest();
     let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
     let loginObj={
         Command:"Login",
@@ -108,7 +108,7 @@ test("Login_UnhappyPath_0",async()=>{
 //Login to an account already signed in
 test("Login_UnhappyPath_1",async()=>{
     let messageManager=new MessageManagerForTest();
-    let userManager=new UserManagerForTest();
+    let userManager=new UserValidatorForTest();
     let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
     let loginObj={
         Command:"Login",
@@ -161,7 +161,7 @@ test("Login_UnHappyPath_3",async()=>{
 })
 test("Logout_HappyPath",async()=>{
     let messageManager=new MessageManagerForTest();
-    let userManager=new UserManagerForTest();
+    let userManager=new UserValidatorForTest();
     let sccObj=new SCC.SimpleChatCommand(userManager,messageManager);
     let loginObj={
         Command:"Login",
