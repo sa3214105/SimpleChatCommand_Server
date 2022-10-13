@@ -35,19 +35,21 @@ test("CreateUser Thread Safe Test",async()=>{
     let dbPath="./test4.db";
     RemoveDB(dbPath);
     let userManager=new UserValidator_SQLite(dbPath);
-    let awaitfunc=new Promise((resolve,reject)=>{
+    await new Promise((resolve,reject)=>{
         let counter=0;
-        for(let i=0;i<1000;++i){
-            userManager.CreateUser("userName","xxx")
-            .then(()=>++counter)
+        for(let i=0;i<10;++i){
+            (userManager.CreateUser("userName","xxx"))
+            .then(()=>{
+                ++counter
+             })
             .catch(err=>reject(err));
         }
-        setInterval(() => {
-            if(counter==1000){
+        let timer=setInterval(() => {
+            if(counter==10){
                 resolve();
+                clearInterval(timer);
             }
         }, 10);
     });
-    await awaitfunc;
     RemoveDB(dbPath);
 });
