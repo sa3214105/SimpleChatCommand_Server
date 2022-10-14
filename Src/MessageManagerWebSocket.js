@@ -1,5 +1,5 @@
 import { IMessageManager,UserStruct,MessageHandlerResult } from "./SimpleChatCommand_Server.js";
-import WebSocket,{WebSocketServer} from "ws";
+import {WebSocketServer} from "ws";
 export class UserStructWebSocket extends UserStruct{
     #m_WebSocket=null;
     constructor(webSocket){
@@ -18,7 +18,7 @@ export class MessageManagerWebSocket extends IMessageManager{
     constructor(obj){
         super();
         //this.m_UserManager=userManager;
-        if(obj instanceof WebSocket){
+        if(obj instanceof WebSocketServer){
             this.m_WebSocketServer=obj;
         }else if(obj instanceof Object){
             this.m_WebSocketConfig=obj;
@@ -35,6 +35,12 @@ export class MessageManagerWebSocket extends IMessageManager{
             }
         }
         this.m_WebSocketServer.on("connection",this.#OnConnection.bind(this))
+    }
+    Stop(){
+        if(this.m_WebSocketServer!==null){
+            this.m_WebSocketServer.close();
+            this.m_WebSocketServer=null;
+        }
     }
     async #OnConnection(webSocket,request){
         let user=new UserStructWebSocket(webSocket);
