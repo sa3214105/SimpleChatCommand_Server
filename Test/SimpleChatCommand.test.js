@@ -287,6 +287,21 @@ test("Broadcast_UnHappyPath",async()=>{
         Data:"The obj is not a instance of BroadcastStruct"
     })
 })
+test("GetUsers",async()=>{
+    let {MessageManager:messageManager}=init();
+    let user1=await messageManager.SendCommand_Async(GetLoginObj("user1"));
+    await messageManager.SendCommand_Async({
+        Command:"GetUsers",
+        Data:{}
+    },user1);
+    expect(messageManager.GetLastHandlerResult()).toEqual({
+        Command:"GetUsers",
+        State:"success",
+        Data:[
+            "user1"
+        ]
+    })
+})
 test("WrongCommandStruct",async()=>{
     let {MessageManager:messageManager}=init();
     await messageManager.SendCommand_Async({});

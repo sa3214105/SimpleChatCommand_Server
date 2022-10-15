@@ -79,7 +79,8 @@ export class SimpleChatCommand_Server{
                 ["Login",this.#Login.bind(this)],
                 ["SendMessage",this.#SendMessage.bind(this)],
                 ["Broadcast",this.#Broadcast.bind(this)],
-                ["Logout",this.#Logout.bind(this)]
+                ["Logout",this.#Logout.bind(this)],
+                ["GetUsers",this.#GetUsers.bind(this)]
             ]);
         }
     AddCustomerCommand(commandName,commandFunc){
@@ -193,6 +194,9 @@ export class SimpleChatCommand_Server{
     async #Logout(sender){
         await this.#m_UserManager.RemoveUser_Async(sender);
     }
+    async #GetUsers(sender){
+        return this.#m_UserManager.GetUsers();
+    }
 }
 export class UserManager{
     #m_Mutex=new Mutex();
@@ -228,6 +232,6 @@ export class UserManager{
         return ret;
     }
     GetUsers(){
-        return this.#m_Users.keys();
+        return [...this.#m_Users.keys()];
     }
 }
