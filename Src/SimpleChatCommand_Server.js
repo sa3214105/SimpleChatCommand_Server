@@ -2,18 +2,18 @@ import { Mutex } from "async-mutex";
 import * as UTILITY from "./Utility.js";
 export class IUserManager{
     async CreateUser(userName,password){
-        throw "no implementation";
+        throw new Error("no implementation");
     }
     async Auth(userName,password){
-        throw "no implementation";
+        throw new Error("no implementation");
     }
 }
 export class IMessageManager{
     SetMessageHandler(messageHandler){
-        throw "no implementation";
+        throw new Error("no implementation");
     }
     SendMessage(sender,receiver,message){
-        throw "no implementation";
+        throw new Error("no implementation");
     }
 }
 export class UserStruct{
@@ -66,12 +66,12 @@ export class SimpleChatCommand_Server{
             if(userValidator instanceof IUserManager){
                 this.#m_UserValidator=userValidator;
             }else{
-                throw "Please input instance of IUserManager";
+                throw new Error("Please input instance of IUserManager");
             }
             if(messageManager instanceof IMessageManager){
                 this.#m_MessageManager=messageManager;
             }else{
-                throw "Please input instance of IMessageManager";
+                throw new Error("Please input instance of IMessageManager");
             }
         }
         #SetDefaultCommands(){
@@ -89,10 +89,10 @@ export class SimpleChatCommand_Server{
     }
         #CheckCustomerCommandParameter(commandName,commandFunc){
             if(typeof(commandName)!=="string"){
-                throw "CommandName must be a String";
+                throw new Error("CommandName must be a String");
             }
             if(typeof(commandFunc)!=="function"){
-                throw "CommandFunc must be a Function";
+                throw new Error("CommandFunc must be a Function");
             }
         }
     async MessageHandler(sender,commandObj){
@@ -118,25 +118,25 @@ export class SimpleChatCommand_Server{
     }
         #CheckSenderObj(senderObj){
             if(!(senderObj instanceof UserStruct)){
-                throw "The Sender is not a instance of UserStruct";
+                throw new Error("The Sender is not a instance of UserStruct");
             }
         }
         #CheckCommandObj(commandObj){
             if(!UTILITY.InstanceOf_Soft(CommandStruct,commandObj)){
-                throw "The obj is not a instance of CommandStruct";
+                throw new Error("The obj is not a instance of CommandStruct");
             }
             if(!this.#m_CmdMap.has(commandObj["Command"])){
-                throw "Wrong Command";
+                throw new Error("Wrong Command");
             }
         }
     //Command handler
     async #Login(sender,data){
         if(sender.IsLoggedIn()){
-            throw "The User Is Login";
+            throw new Error("The User Is Login");
         }else{
             let userInfo=data;
             if(!UTILITY.InstanceOf_Soft(LoginStruct,userInfo)){
-                throw "Wrong Login Struct";
+                throw new Error("Wrong Login Struct");
             }else{
                 let IsPasswordRight=await this.#m_UserValidator.Auth(userInfo.UserID,userInfo.Password);
                 if(IsPasswordRight){
@@ -144,10 +144,10 @@ export class SimpleChatCommand_Server{
                         sender.ID=userInfo.UserID;
                         await this.#m_UserManager.AddUser_Async(sender);
                     }else{
-                        throw "This account is already logged in";
+                        throw new Error("This account is already logged in");
                     }
                 }else{
-                    throw "Wrong UserID or Password";
+                    throw new Error("Wrong UserID or Password");
                 }
             }
         }
@@ -159,13 +159,13 @@ export class SimpleChatCommand_Server{
         let {Receiver:receiverID,Message:message}=messageObj;
         let receiver=this.#m_UserManager.GetUserByID(receiverID);
         if(receiver===null){
-            throw "The receiver does not exist";
+            throw new Error("The receiver does not exist");
         }
         return this.#m_MessageManager.SendMessage(sender,receiver,message);
     }
         #CheckMessageObj(messageObj){
             if(!UTILITY.InstanceOf_Soft(MessageStruct,messageObj)){
-                throw "The messageObj is not a instance of MessageStruct";
+                throw new Error("The messageObj is not a instance of MessageStruct");
             }
         }
     async #Broadcast(sender,data){
@@ -188,7 +188,7 @@ export class SimpleChatCommand_Server{
     }
         #CheckBroadcastObj(broadcastObj){
             if(!UTILITY.InstanceOf_Soft(BroadcastStruct,broadcastObj)){
-                throw "The obj is not a instance of BroadcastStruct";
+                throw new Error("The obj is not a instance of BroadcastStruct");
             }
         }
     async #Logout(sender){

@@ -102,7 +102,7 @@ test("Login_UnhappyPath_0",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
         loginObj.Command,
         "failed",
-        "Wrong UserID or Password"
+        new Error("Wrong UserID or Password")
     ));
 })
 //Login to an account already signed in
@@ -131,7 +131,7 @@ test("Login_UnhappyPath_1",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual(new SCC.MessageHandlerResult(
         loginObj.Command,
         "failed",
-        "This account is already logged in"
+        new Error("This account is already logged in")
     ))
 })
 //Repeat login
@@ -143,7 +143,7 @@ test("Login_UnhappyPath_2",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual({
         Command:"Login",
         State:"failed",
-        Data:"The User Is Login"
+        Data:new Error("The User Is Login")
     });
 })
 //Wrong login struct
@@ -156,7 +156,7 @@ test("Login_UnHappyPath_3",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual({
         Command:"Login",
         State:"failed",
-        Data:"Wrong Login Struct"
+        Data:new Error("Wrong Login Struct")
     })
 })
 test("Logout_HappyPath",async()=>{
@@ -247,7 +247,7 @@ test("SendMessage_UnhappyPath",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual({
         Command:"SendMessage",
         State:"failed",
-        Data:"The receiver does not exist"
+        Data:new Error("The receiver does not exist")
     });
 })
 test("Broadcast_HappyPath",async()=>{
@@ -284,7 +284,7 @@ test("Broadcast_UnHappyPath",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual({
         Command:"Broadcast",
         State:"failed",
-        Data:"The obj is not a instance of BroadcastStruct"
+        Data:new Error("The obj is not a instance of BroadcastStruct")
     })
 })
 test("GetUsers",async()=>{
@@ -308,7 +308,7 @@ test("WrongCommandStruct",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual({
         Command:"",
         State:"failed",
-        Data:"The obj is not a instance of CommandStruct"
+        Data:new Error("The obj is not a instance of CommandStruct")
     })
     await messageManager.SendCommand_Async({
         Command:"Test",
@@ -317,7 +317,7 @@ test("WrongCommandStruct",async()=>{
     expect(messageManager.GetLastHandlerResult()).toEqual({
         Command:"",
         State:"failed",
-        Data:"Wrong Command"
+        Data:new Error("Wrong Command")
     })
 })
 test("AddCustomerCommand",async()=>{

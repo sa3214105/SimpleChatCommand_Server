@@ -17,7 +17,6 @@ export class MessageManagerWebSocket extends IMessageManager{
     m_MessageHandler=null;
     constructor(obj){
         super();
-        //this.m_UserManager=userManager;
         if(obj instanceof WebSocketServer){
             this.m_WebSocketServer=obj;
         }else if(obj instanceof Object){
@@ -64,8 +63,8 @@ export class MessageManagerWebSocket extends IMessageManager{
         this.m_MessageHandler=messageHandler;
     }
     SendMessage(sender,receiver,message){
-        if(!sender instanceof UserStructWebSocket||!receiver instanceof UserStructWebSocket){
-            throw "Internal Error 100";//wrong user type
+        if(!(sender instanceof UserStructWebSocket)||!(receiver instanceof UserStructWebSocket)){
+            throw new Error("Internal Error 100");//wrong user type
         }
         let data={
             Sender:sender.ID,
