@@ -15,7 +15,7 @@
             "name": "Show Document",
             "request": "launch",
             "type": "chrome",
-            "url": "${workspaceFolder}/Doc/index.html",
+            "url": "${workspaceFolder}/docs/index.html",
             "preLaunchTask":"Produce document" 
         },
         {

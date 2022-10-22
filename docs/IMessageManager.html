@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: MessageManagerWebSocket</title>
+    <title>JSDoc: Interface: IMessageManager</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: MessageManagerWebSocket</h1>
+    <h1 class="page-title">Interface: IMessageManager</h1>
 
     
 
@@ -28,9 +28,7 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>MessageManagerWebSocket<span class="signature">(obj)</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description">Basic on <a href="https://www.npmjs.com/package/ws">ws</a> library</div>
+        <h2>IMessageManager</h2>
         
     
 </header>
@@ -39,88 +37,10 @@
     <div class="container-overview">
     
         
-
-    
-    <h2>Constructor</h2>
-    
-
-    
-    <h4 class="name" id="MessageManagerWebSocket"><span class="type-signature"></span>new MessageManagerWebSocket<span class="signature">(obj)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    When param is Object type, it is regarded as websocketConfig.When param is number type, it is regarded as port.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
+            <div class="description">If you want to customize MessageManager please extends this interface.</div>
         
 
         
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>obj</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">WebSocketServer</span>
-|
-
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
 
 
 <dl class="details">
@@ -152,7 +72,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MessageManagerWebSocket.js.html">MessageManagerWebSocket.js</a>, <a href="MessageManagerWebSocket.js.html#line18">line 18</a>
+        <a href="SimpleChatCommand_Server.js.html">SimpleChatCommand_Server.js</a>, <a href="SimpleChatCommand_Server.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -164,49 +84,14 @@
 </dl>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
     
     </div>
 
     
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="IMessageManager.html">IMessageManager</a></li>
-    </ul>
-
 
     
 
-    
-
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="MessageManagerWebSocket.html">MessageManagerWebSocket</a></dt>
-            <dd></dd>
-        </dl>
     
 
     
@@ -349,11 +234,6 @@
     
 
     
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="IMessageManager.html#SendMessage">IMessageManager#SendMessage</a>
-    </li></ul></dd>
-    
 
     
 
@@ -487,11 +367,6 @@
     
 
     
-    <dt class="tag-overrides">Overrides:</dt>
-    <dd class="tag-overrides"><ul class="dummy"><li>
-        <a href="IMessageManager.html#SetMessageHandler">IMessageManager#SetMessageHandler</a>
-    </li></ul></dd>
-    
 
     
 
@@ -543,174 +418,6 @@
 
 
         
-            
-
-    
-
-    
-    <h4 class="name" id="Start"><span class="type-signature"></span>Start<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MessageManagerWebSocket.js.html">MessageManagerWebSocket.js</a>, <a href="MessageManagerWebSocket.js.html#line39">line 39</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="Stop"><span class="type-signature"></span>Stop<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="MessageManagerWebSocket.js.html">MessageManagerWebSocket.js</a>, <a href="MessageManagerWebSocket.js.html#line50">line 50</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     
 
     
@@ -732,7 +439,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Oct 23 2022 02:16:55 GMT+0800 (台北標準時間)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Sun Oct 23 2022 02:31:57 GMT+0800 (台北標準時間)
 </footer>
 
 <script> prettyPrint(); </script>

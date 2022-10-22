@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"command": "jsdoc ./Src ./readme.md -d ./Doc",
+			"command": "jsdoc ./Src ./readme.md -d ./docs",
 			"label": "Produce document",
 			"detail": "install dependencies from package"
 		},
