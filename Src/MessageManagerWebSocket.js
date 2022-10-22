@@ -1,6 +1,6 @@
 import { IMessageManager,UserStruct,MessageHandlerResult } from "./SimpleChatCommand_Server.js";
 import {WebSocketServer} from "ws";
-export class UserStructWebSocket extends UserStruct{
+class UserStructWebSocket extends UserStruct{
     #m_WebSocket=null;
     constructor(webSocket){
         super("");
@@ -10,11 +10,21 @@ export class UserStructWebSocket extends UserStruct{
         return this.#m_WebSocket;
     }
 }
+/**
+ * Basic on [ws]{@link https://www.npmjs.com/package/ws} library 
+ * @class
+ * @extends IMessageManager
+ */
 export class MessageManagerWebSocket extends IMessageManager{
     m_WebSocketServer=null;
     m_WebSocketConfig=null;
     m_Port=8080;
     m_MessageHandler=null;
+    /**
+     * When param is Object type, it is regarded as websocketConfig.
+     * When param is number type, it is regarded as port.
+     * @param {WebSocketServer|Object|number} obj
+     */
     constructor(obj){
         super();
         if(obj instanceof WebSocketServer){
@@ -25,6 +35,7 @@ export class MessageManagerWebSocket extends IMessageManager{
             this.m_Port=obj;
         }
     }
+    /** */
     Start(){
         if(this.m_WebSocketServer===null){
             if(this.m_WebSocketConfig===null){
@@ -35,6 +46,7 @@ export class MessageManagerWebSocket extends IMessageManager{
         }
         this.m_WebSocketServer.on("connection",this.#OnConnection.bind(this))
     }
+    /** */
     Stop(){
         if(this.m_WebSocketServer!==null){
             this.m_WebSocketServer.close();

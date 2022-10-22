@@ -1,62 +1,102 @@
 import { Mutex } from "async-mutex";
 import * as UTILITY from "./Utility.js";
+/**
+ * If you want to customize UserValidator please extends this interface.
+ * @Interface 
+ * @name IUserValidator
+ */
 export class IUserValidator{
+    constructor(){}
+    /**
+     * Create user 
+     * @param {string} userName 
+     * @param {string} password 
+     */
     async CreateUser(userName,password){
         throw new Error("no implementation");
     }
+    /**
+     * Create Auth 
+     * @param {string} userName 
+     * @param {string} password 
+     */
     async Auth(userName,password){
         throw new Error("no implementation");
     }
 }
+/**
+ * If you want to customize MessageManager please extends this interface.
+ * @Interface 
+ * @name IMessageManager
+ */
 export class IMessageManager{
+    /**
+     * 
+     * @param {function} messageHandler 
+     */
     SetMessageHandler(messageHandler){
         throw new Error("no implementation");
     }
+    /**
+     * 
+     * @param {UserStruct} sender 
+     * @param {UserStruct} receiver 
+     * @param {string} message 
+     */
     SendMessage(sender,receiver,message){
         throw new Error("no implementation");
     }
 }
+/**@class */
 export class UserStruct{
-    ID="";
-    constructor(id){
-        if(!!id){
-            this.ID=id;
-        }
-    }
+    /**@member {string}*/ID="";
     IsLoggedIn(){
         return this.ID!=="";
     }
 }
+/**@class */
 export class CommandStruct{
-    Command="";
-    Data="";
+    /**@member {string}*/Command="";
+    /**@member {string}*/Data="";
 }
+/**@class */
 export class LoginStruct{
-    UserID="";
-    Password="";
+    /**@member {string}*/UserID="";
+    /**@member {string}*/Password="";
 }
+/**@class */
 export class MessageStruct{
-    Receiver=null;//UserStruct
-    Message="";
+    /**@member {object}*/Receiver=null;//UserStruct
+    /**@member {string}*/Message="";
 }
+/**@class */
 export class BroadcastStruct{
-    Broadcast="";
+    /**@member {string}*/Broadcast="";
 }
+/**@class */
 export class MessageHandlerResult{
-    Command="";
-    State="";
-    Data=null;
+    /**@member {string}*/Command="";
+    /**@member {string}*/State="";
+    /**@member {object}*/Data=null;
     constructor(command,state,data){
         this.Command=command;
         this.State=state;
         this.Data=data;
     }
 }
+/**
+ *@class Control data flow and manage command.
+ */
 export class SimpleChatCommand_Server{
     #m_UserValidator=null;
     #m_MessageManager=null;
     #m_CmdMap=new Map();
     #m_UserManager=new UserManager();
+    /**
+     * 
+     * @param {IUserValidator} userValidator 
+     * @param {IMessageManager} messageManager 
+     */
     constructor(userValidator,messageManager){
         this.#CheckConstructParameter(userValidator,messageManager);
         this.#SetDefaultCommands();
@@ -203,7 +243,7 @@ export class SimpleChatCommand_Server{
         return this.#m_UserManager.GetUsers();
     }
 }
-export class UserManager{
+class UserManager{
     #m_Mutex=new Mutex();
     #m_Users=new Map();
     async AddUser_Async(user){

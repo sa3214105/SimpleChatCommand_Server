@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"command": "jsdoc ./Src ./readme.md",
+			"label": "Produce document",
+			"detail": "install dependencies from package"
+		},
+		{
+			"type": "npm",
+			"script": "test",
+			"label": "Produce Test Result",
+			"detail": "install dependencies from package"
+		}
+	]
+}

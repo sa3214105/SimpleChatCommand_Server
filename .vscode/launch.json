@@ -8,7 +8,15 @@
             "name": "Show Test Details",
             "request": "launch",
             "type": "chrome",
-            "url": "${workspaceFolder}/coverage/lcov-report/index.html"
+            "url": "${workspaceFolder}/coverage/lcov-report/index.html",
+            "preLaunchTask": "Produce Test Result"
+        },
+        {
+            "name": "Show Document",
+            "request": "launch",
+            "type": "chrome",
+            "url": "${workspaceFolder}/out/index.html",
+            "preLaunchTask":"Produce document" 
         },
         {
             "type": "node",
@@ -32,13 +40,10 @@
             "disableOptimisticBPs": true,
             "windows": {
                 "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+            },
+            "presentation":{
+                "hidden": true
             }
-        },
-        {
-            "command": "npm run test",
-            "name": "npm run test",
-            "request": "launch",
-            "type": "node-terminal"
         },
         {
             "type": "node",
@@ -50,5 +55,5 @@
             "program": "${workspaceFolder}\\main.js"
         }
         
-    ]
+    ],
 }
