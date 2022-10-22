@@ -1,6 +1,6 @@
 import { Mutex } from "async-mutex";
 import * as UTILITY from "./Utility.js";
-export class IUserManager{
+export class IUserValidator{
     async CreateUser(userName,password){
         throw new Error("no implementation");
     }
@@ -60,13 +60,13 @@ export class SimpleChatCommand_Server{
     constructor(userValidator,messageManager){
         this.#CheckConstructParameter(userValidator,messageManager);
         this.#SetDefaultCommands();
-        this.#m_MessageManager.SetMessageHandler(this.MessageHandler.bind(this));
+        this.#m_MessageManager.SetMessageHandler(this.#MessageHandler.bind(this));
     }
         #CheckConstructParameter(userValidator,messageManager){
-            if(userValidator instanceof IUserManager){
+            if(userValidator instanceof IUserValidator){
                 this.#m_UserValidator=userValidator;
             }else{
-                throw new Error("Please input instance of IUserManager");
+                throw new Error("Please input instance of IUserValidator");
             }
             if(messageManager instanceof IMessageManager){
                 this.#m_MessageManager=messageManager;
@@ -83,6 +83,11 @@ export class SimpleChatCommand_Server{
                 ["GetUsers",this.#GetUsers.bind(this)]
             ]);
         }
+    /**
+     * Add Customer Command
+     * @param {string} commandName 
+     * @param {function} commandFunc 
+     */
     AddCustomerCommand(commandName,commandFunc){
         this.#CheckCustomerCommandParameter(commandName,commandFunc);
         this.#m_CmdMap.set(commandName,commandFunc);
@@ -95,7 +100,7 @@ export class SimpleChatCommand_Server{
                 throw new Error("CommandFunc must be a Function");
             }
         }
-    async MessageHandler(sender,commandObj){
+    async #MessageHandler(sender,commandObj){
         let result=new MessageHandlerResult("","failed","no processed");
         try{
             this.#CheckSenderObj(sender);

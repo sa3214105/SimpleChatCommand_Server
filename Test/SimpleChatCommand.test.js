@@ -28,7 +28,7 @@ class MessageManagerForTest extends SCC.IMessageManager{
         return true;
     }
 }
-class UserValidatorForTest extends SCC.IUserManager{
+class UserValidatorForTest extends SCC.IUserValidator{
     m_Users=[
         ["user1","p@ssw0rd"],
         ["user2","p@ssw0rd"],
