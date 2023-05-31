@@ -66,7 +66,7 @@ export class LoginStruct{
 }
 /**@class */
 export class MessageStruct{
-    /**@member {object}*/Receiver=null;//UserStruct
+    /**@member {string}*/Receiver="";//ID
     /**@member {string}*/Message="";
 }
 /**@class */
@@ -155,8 +155,8 @@ export class SimpleChatCommand_Server{
                 result.State="failed";
             }
         }catch(e){
-            console.warn(e)
-            result.Data=e;
+             console.warn(e.message)
+            result.Data=e.message;
             result.State="failed";
         }
         return result;

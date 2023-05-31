@@ -67,7 +67,7 @@ export class MessageManagerWebSocket extends IMessageManager{
             
         })
         webSocket.on("close",async(code,reason)=>{
-            let result=await this.m_MessageHandler(user,{Command:"Logout",data:""});
+            let result=await this.m_MessageHandler(user,{Command:"Logout",Data:""});
             webSocket.send(JSON.stringify(result));
         });
     }
