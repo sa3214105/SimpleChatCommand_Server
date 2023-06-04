@@ -35,7 +35,7 @@ class UserValidatorForTest extends SCC.IUserValidator{
         ["user3","p@ssw0rd"],
     ]
     async CreateUser(userName,password){
-        this.m_Users.push(userName);
+        this.m_Users.push([userName,password]);
     }
     async Auth(userName,password){
        return this.m_Users.find(user=>user[0]===userName&&user[1]===password);
