@@ -20,6 +20,8 @@ export class MessageManagerWebSocket extends IMessageManager{
     m_WebSocketConfig=null;
     m_Port=8080;
     m_MessageHandler=null;
+    m_UserConnectListener = null;
+    m_UserDisConnectLister = null;
     /**
      * When param is Object type, it is regarded as websocketConfig.
      * When param is number type, it is regarded as port.
@@ -55,20 +57,25 @@ export class MessageManagerWebSocket extends IMessageManager{
     }
     async #OnConnection(webSocket,request){
         let user=new UserStructWebSocket(webSocket);
+        if(this.m_UserConnectListener){
+            this.m_UserConnectListener(user);
+        }
         webSocket.on("message",async(data,isBinary)=>{
-            let inputObj={};
-            try{
-                inputObj=JSON.parse(data);
-                let result=await this.m_MessageHandler(user,inputObj);
-                webSocket.send(JSON.stringify(result));
-            }catch{
-                webSocket.send("json parse error!");
+            if(this.m_MessageHandler){
+                let inputObj={};
+                try{
+                    inputObj=JSON.parse(data);
+                    let result=await this.m_MessageHandler(user,inputObj);
+                    webSocket.send(JSON.stringify(result));
+                }catch{
+                    webSocket.send("json parse error!");
+                }
             }
-            
         })
         webSocket.on("close",async(code,reason)=>{
-            let result=await this.m_MessageHandler(user,{Command:"Logout",Data:""});
-            webSocket.send(JSON.stringify(result));
+            if(this.m_UserDisConnectLister){
+                this.m_UserDisConnectLister(user);
+            }
         });
     }
     SetMessageHandler(messageHandler){
@@ -85,5 +92,17 @@ export class MessageManagerWebSocket extends IMessageManager{
         };
         receiver.GetWebSocket().send(JSON.stringify(data));
         return "success";
+    }
+     /**
+     * @param {(user:UserStruct)=>void} listener 
+     */
+    onUserConnect(listener){
+        this.m_UserConnectListener = listener;
+    }
+    /**
+     * @param {(user:UserStruct)=>void} listener 
+     */
+    onUserDisconnect(listener){
+        this.m_UserDisConnectLister = listener;
     }
 }

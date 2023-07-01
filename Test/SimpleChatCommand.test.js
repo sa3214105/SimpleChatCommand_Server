@@ -3,9 +3,14 @@ class MessageManagerForTest extends SCC.IMessageManager{
     #m_EventListener=null;
     MessageObjList=[];
     HandlerResultList=[];
+    m_UserConnectListener = null;
+    m_UserDisConnectLister = null;
     async SendCommand_Async(CommandObj,sender){
         if(!sender){
             sender=new SCC.UserStruct("");
+            if(this.m_UserConnectListener){
+                this.m_UserConnectListener(sender);
+            }
         }
         this.HandlerResultList.push(await this.#m_EventListener(sender,CommandObj));
         return sender;
@@ -26,6 +31,18 @@ class MessageManagerForTest extends SCC.IMessageManager{
     SendMessage(sender,receiver,message){
         this.MessageObjList.push({sender,receiver,message})
         return true;
+    }
+     /**
+     * @param {(user:UserStruct)=>void} listener 
+     */
+    onUserConnect(listener){
+        this.m_UserConnectListener = listener;
+    }
+    /**
+     * @param {(user:UserStruct)=>void} listener 
+     */
+    onUserDisconnect(listener){
+        this.m_UserDisConnectLister = listener;
     }
 }
 class UserValidatorForTest extends SCC.IUserValidator{

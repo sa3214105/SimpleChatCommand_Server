@@ -32,7 +32,7 @@ export class IUserValidator{
 export class IMessageManager{
     /**
      * 
-     * @param {function} messageHandler 
+     * @param {(sender:UserStruct,command:CommandStruct)=>Promise<object>} messageHandler 
      */
     SetMessageHandler(messageHandler){
         throw new Error("no implementation");
@@ -44,6 +44,18 @@ export class IMessageManager{
      * @param {string} message 
      */
     SendMessage(sender,receiver,message){
+        throw new Error("no implementation");
+    }
+    /**
+     * @param {(user:UserStruct)=>void} listener 
+     */
+    onUserConnect(listener){
+        throw new Error("no implementation");
+    }
+    /**
+     * @param {(user:UserStruct)=>void} listener 
+     */
+    onUserDisconnect(listener){
         throw new Error("no implementation");
     }
 }
@@ -89,7 +101,13 @@ export class MessageHandlerResult{
  */
 export class SimpleChatCommand_Server{
     #m_UserValidator=null;
+    /** 
+     * @type {IMessageManager}
+    */
     #m_MessageManager=null;
+    /**
+     * @type {Map<string,(sender:UserStruct,commandObj:CommandStruct)=>MessageHandlerResult>}
+     */
     #m_CmdMap=new Map();
     #m_UserManager=new UserManager();
     /**
@@ -101,6 +119,7 @@ export class SimpleChatCommand_Server{
         this.#CheckConstructParameter(userValidator,messageManager);
         this.#SetDefaultCommands();
         this.#m_MessageManager.SetMessageHandler(this.#MessageHandler.bind(this));
+        this.#m_MessageManager.onUserDisconnect(this.#m_UserManager.RemoveUser_Async);
     }
         #CheckConstructParameter(userValidator,messageManager){
             if(userValidator instanceof IUserValidator){
@@ -126,7 +145,7 @@ export class SimpleChatCommand_Server{
     /**
      * Add Customer Command
      * @param {string} commandName 
-     * @param {function} commandFunc 
+     * @param {(sender:UserStruct,commandObj:CommandStruct)=>MessageHandlerResult>} commandFunc 
      */
     AddCustomerCommand(commandName,commandFunc){
         this.#CheckCustomerCommandParameter(commandName,commandFunc);
