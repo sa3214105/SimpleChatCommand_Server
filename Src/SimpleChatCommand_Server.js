@@ -31,7 +31,7 @@ export class IUserValidator{
  */
 export class IMessageManager{
     /**
-     * 
+     * @override
      * @param {(sender:UserStruct,command:CommandStruct)=>Promise<object>} messageHandler 
      */
     SetMessageHandler(messageHandler){
@@ -119,7 +119,7 @@ export class SimpleChatCommand_Server{
         this.#CheckConstructParameter(userValidator,messageManager);
         this.#SetDefaultCommands();
         this.#m_MessageManager.SetMessageHandler(this.#MessageHandler.bind(this));
-        this.#m_MessageManager.onUserDisconnect(this.#m_UserManager.RemoveUser_Async);
+        this.#m_MessageManager.onUserDisconnect(user=>this.#m_UserManager.RemoveUser_Async(user));
     }
         #CheckConstructParameter(userValidator,messageManager){
             if(userValidator instanceof IUserValidator){

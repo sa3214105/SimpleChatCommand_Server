@@ -1,17 +1,21 @@
 {
-  "type": "module",
   "dependencies": {
+    "@types/ws": "^8.5.4",
     "async-mutex": "^0.3.2",
     "nodemodule": "^0.3.0",
     "sqlite3": "^5.0.6",
     "ws": "^8.5.0"
   },
   "devDependencies": {
-    "jest": "^28.1.1"
+    "@types/jest": "^29.5.3",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "jest"
   },
   "name": "simplechatcommand_server",
   "description": "[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sa3214105_SimpleChatService&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=sa3214105_SimpleChatService)\r [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=sa3214105_SimpleChatService&metric=bugs)](https://sonarcloud.io/summary/new_code?id=sa3214105_SimpleChatService)\r [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sa3214105_SimpleChatService&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=sa3214105_SimpleChatService)\r ![example workflow](https://github.com/sa3214105/SimpleChatCommand_Server/actions/workflows/jest.yml/badge.svg)",

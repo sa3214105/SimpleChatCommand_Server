@@ -1,7 +1,6 @@
 import * as fs from "fs";
-import { resolve } from "path";
-import {UserValidator_SQLite } from "../Src/UserValidator.js";
-function RemoveDB(dbPath){
+import {UserValidator_SQLite } from "../Src/UserValidator";
+function RemoveDB(dbPath:string){
     if(fs.existsSync(dbPath)){
         fs.unlinkSync(dbPath);
     }
@@ -12,9 +11,9 @@ test("Basic Test",async()=>{
     let passwd="passwd";
     //remove old db
     RemoveDB(dbPath);
-    let userManager=new UserValidator_SQLite(dbPath);
-    expect(await userManager.CreateUser(userName,passwd)).toBe(true);
-    expect(await userManager.Auth(userName,passwd)).toBe(true);
+    let userManager:UserValidator_SQLite|null = new UserValidator_SQLite(dbPath);
+    expect(await userManager.createUser(userName,passwd)).toBe(true);
+    expect(await userManager.auth(userName,passwd)).toEqual({"ID": "User1", "Name": "User1"});
     userManager=null;
     RemoveDB(dbPath);
 });
@@ -24,21 +23,21 @@ test("Duplicate User Creation",async()=>{
     let passwd="passwd";
     //remove old db
     RemoveDB(dbPath);
-    let userManager=new UserValidator_SQLite(dbPath);
-    expect(await userManager.CreateUser(userName,passwd)).toBe(true);
-    expect(await userManager.CreateUser(userName,passwd)).toBe(false);
-    expect(await userManager.Auth(userName,passwd)).toBe(true);
-    userManager=undefined;
+    let userManager:UserValidator_SQLite|null=new UserValidator_SQLite(dbPath);
+    expect(await userManager.createUser(userName,passwd)).toBe(true);
+    expect(await userManager.createUser(userName,passwd)).toBe(false);
+    expect(await userManager.auth(userName,passwd)).toEqual({"ID": "User1", "Name": "User1"});
+    userManager=null;
     RemoveDB(dbPath);
 });
 test("CreateUser Thread Safe Test",async()=>{
     let dbPath="./test4.db";
     RemoveDB(dbPath);
-    let userManager=new UserValidator_SQLite(dbPath);
-    await new Promise((resolve,reject)=>{
+    let userManager:UserValidator_SQLite|null =new UserValidator_SQLite(dbPath);
+    await new Promise<void>((resolve,reject)=>{
         let counter=0;
         for(let i=0;i<10;++i){
-            (userManager.CreateUser("userName","xxx"))
+            userManager?.createUser("userName","xxx")
             .then(()=>{
                 ++counter
              })

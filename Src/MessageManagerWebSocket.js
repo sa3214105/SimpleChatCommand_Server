@@ -78,6 +78,9 @@ export class MessageManagerWebSocket extends IMessageManager{
             }
         });
     }
+    /**
+     * @inheritdoc
+     */
     SetMessageHandler(messageHandler){
         this.m_MessageHandler=messageHandler;
     }
