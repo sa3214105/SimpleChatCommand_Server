@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex";
 import crypto from "crypto";
-import { CDBManager } from "./CDBManager.js";
-import { IAuthenticator, User } from "./SimpleChatCommandServer.js";
+import { CDBManager } from "./CDBManager";
+import { IAuthenticator, User } from "./SimpleChatCommandServer";
 export class Authenticator_SQLite implements IAuthenticator {
     static LAST_VER = 0.1;
     private DBManager: CDBManager;

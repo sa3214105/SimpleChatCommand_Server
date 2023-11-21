@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import {UserValidator_SQLite } from "../Src/UserValidator";
+import {Authenticator_SQLite } from "../Src/Authenticator";
 function RemoveDB(dbPath:string){
     if(fs.existsSync(dbPath)){
         fs.unlinkSync(dbPath);
@@ -11,7 +11,7 @@ test("Basic Test",async()=>{
     let passwd="passwd";
     //remove old db
     RemoveDB(dbPath);
-    let userManager:UserValidator_SQLite|null = new UserValidator_SQLite(dbPath);
+    let userManager:Authenticator_SQLite|null = new Authenticator_SQLite(dbPath);
     expect(await userManager.createUser(userName,passwd)).toBe(true);
     expect(await userManager.auth(userName,passwd)).toEqual({"ID": "User1", "Name": "User1"});
     userManager=null;
@@ -23,7 +23,7 @@ test("Duplicate User Creation",async()=>{
     let passwd="passwd";
     //remove old db
     RemoveDB(dbPath);
-    let userManager:UserValidator_SQLite|null=new UserValidator_SQLite(dbPath);
+    let userManager:Authenticator_SQLite|null=new Authenticator_SQLite(dbPath);
     expect(await userManager.createUser(userName,passwd)).toBe(true);
     expect(await userManager.createUser(userName,passwd)).toBe(false);
     expect(await userManager.auth(userName,passwd)).toEqual({"ID": "User1", "Name": "User1"});
@@ -33,7 +33,7 @@ test("Duplicate User Creation",async()=>{
 test("CreateUser Thread Safe Test",async()=>{
     let dbPath="./test4.db";
     RemoveDB(dbPath);
-    let userManager:UserValidator_SQLite|null =new UserValidator_SQLite(dbPath);
+    let userManager:Authenticator_SQLite|null =new Authenticator_SQLite(dbPath);
     await new Promise<void>((resolve,reject)=>{
         let counter=0;
         for(let i=0;i<10;++i){
