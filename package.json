@@ -15,7 +15,8 @@
     "dist"
   ],
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
   "name": "simplechatcommand_server",
   "description": "[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sa3214105_SimpleChatService&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=sa3214105_SimpleChatService)\r [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=sa3214105_SimpleChatService&metric=bugs)](https://sonarcloud.io/summary/new_code?id=sa3214105_SimpleChatService)\r [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sa3214105_SimpleChatService&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=sa3214105_SimpleChatService)\r ![example workflow](https://github.com/sa3214105/SimpleChatCommand_Server/actions/workflows/jest.yml/badge.svg)",
