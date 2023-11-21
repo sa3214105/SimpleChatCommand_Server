@@ -43,7 +43,7 @@ export class Authenticator_SQLite implements IAuthenticator {
         const release = await this.Mutex.acquire();
         let ret = false;
         if (!(await this.isUserNameExist(userName))) {
-            let salt = Math.random().toString()
+            let salt = crypto.randomBytes(16).toString()
             let hashPassword = this.hashPassword(password, salt);
             await this.DBManager.Run(`INSERT INTO USERINFO ("NAME","PASSWORD","SALT") VALUES  (?,?,?);`, [userName, hashPassword, salt]);
             ret = true;
